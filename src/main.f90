@@ -11,5 +11,5 @@ program main
 
     print *, ""
     print *, "Pressione ENTER para sair..."
-    read(*,*) ! Isso segura a janela aberta
+    read(*,*)
 end program main

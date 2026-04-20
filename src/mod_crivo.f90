@@ -8,6 +8,11 @@ contains
         logical(kind=1), allocatable :: eh_primo(:)
         integer(kind=8) :: x, y, n, s
         real(8) :: t1, t2
+        
+        ! Variáveis para o nome do arquivo dinâmico
+        character(len=8)  :: data_atual
+        character(len=10) :: hora_atual
+        character(len=100) :: nome_arquivo
 
         print *, "--- Iniciando Crivo de Atkin ---"
         print *, "Limite:", limite
@@ -59,15 +64,20 @@ contains
         
         print *, "Calculo concluido!"
         print *, "Tempo total de CPU:", t2 - t1, "segundos"
-        print *, "Primos encontrados:", count(eh_primo)
+        print *, "Primos encontrados:", count(eh_primo, kind=8)
 
-        ! --- BLOCO DE SALVAMENTO INTELIGENTE ---
+        ! --- BLOCO DE SALVAMENTO COM NOME ÚNICO ---
         block
             integer(kind=8) :: u, i_64, contador_final
-            open(newunit=u, file='data/resumo_primos.txt', status='replace')
+            
+            call date_and_time(date=data_atual, time=hora_atual)
+            
+            nome_arquivo = "data/resumo_" // data_atual // "_" // hora_atual(1:6) // ".txt"
+            
+            open(newunit=u, file=trim(nome_arquivo), status='replace')
             
             write(u, '(A, I0)') "Limite processado: ", limite
-            write(u, '(A, I0)') "Total de primos encontrados: ", count(eh_primo)
+            write(u, '(A, I0)') "Total de primos encontrados: ", count(eh_primo, kind=8)
             write(u, '(A, F10.4, A)') "Tempo de execucao: ", (t2 - t1), " segundos"
             write(u, '(A)') "-----------------------------------------"
 
@@ -88,8 +98,8 @@ contains
                 end do
             end if
             close(u)
+            print *, "Relatorio gerado em: ", trim(nome_arquivo)
         end block
-        print *, "Relatorio gerado em: data/resumo_primos.txt"
         ! ---------------------------------------
 
         deallocate(eh_primo)
