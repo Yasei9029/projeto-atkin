@@ -4,7 +4,7 @@ program main
     integer(kind=8) :: limite_usuario
 
     print *, ">>> CALCULADORA DE PRIMOS (ATKIN) <<<"
-    print *, "Digite o valor limite (ex: 1000000):"
+    print *, "Digite o valor limite:"
     read(*,*) limite_usuario
 
     call executar_atkin(limite_usuario)
