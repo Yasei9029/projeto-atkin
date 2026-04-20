@@ -1,0 +1,15 @@
+# Compiladores e Objetos
+*.o
+*.mod
+*.smod
+
+# Executáveis
+*.exe
+bin/
+obj/
+
+# Dados e Logs
+data/
+*.dat
+*.bin
+*.txt
