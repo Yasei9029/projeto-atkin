@@ -5,7 +5,7 @@ contains
 
     subroutine executar_atkin(limite)
         integer(kind=8), intent(in) :: limite
-        logical(kind=1), allocatable :: eh_primo(:) ! kind=1 economiza RAM
+        logical(kind=1), allocatable :: eh_primo(:)
         integer(kind=8) :: x, y, n, s
         real(8) :: t1, t2
 
@@ -19,22 +19,19 @@ contains
 
         ! 1. Marcar os candidatos usando as equações quadráticas
         !$OMP PARALLEL DO PRIVATE(x, y, n) SHARED(eh_primo) SCHEDULE(DYNAMIC)
-        do x = 1, int(sqrt(real(limite)))
-            do y = 1, int(sqrt(real(limite)))
+        do x = 1, int(sqrt(real(limite, 8)))
+            do y = 1, int(sqrt(real(limite, 8)))
                 
-                ! Equação 1: n = 4x² + y²
                 n = 4*x**2 + y**2
                 if (n <= limite .and. (mod(n, 12) == 1 .or. mod(n, 12) == 5)) then
                     eh_primo(n) = .not. eh_primo(n)
                 end if
 
-                ! Equação 2: n = 3x² + y²
                 n = 3*x**2 + y**2
                 if (n <= limite .and. mod(n, 12) == 7) then
                     eh_primo(n) = .not. eh_primo(n)
                 end if
 
-                ! Equação 3: n = 3x² - y²
                 n = 3*x**2 - y**2
                 if (x > y .and. n <= limite .and. mod(n, 12) == 11) then
                     eh_primo(n) = .not. eh_primo(n)
@@ -44,8 +41,8 @@ contains
         end do
         !$OMP END PARALLEL DO
 
-        ! 2. Eliminar múltiplos de quadrados (ex: 25, 49, 121...)
-        do s = 5, int(sqrt(real(limite)))
+        ! 2. Eliminar múltiplos de quadrados
+        do s = 5, int(sqrt(real(limite, 8)))
             if (eh_primo(s)) then
                 n = s**2
                 do x = n, limite, n
@@ -54,7 +51,7 @@ contains
             end if
         end do
 
-        ! 3. Adicionar os primos base
+        ! 3. Primos base
         if (limite >= 2) eh_primo(2) = .true.
         if (limite >= 3) eh_primo(3) = .true.
 
@@ -62,11 +59,39 @@ contains
         
         print *, "Calculo concluido!"
         print *, "Tempo total de CPU:", t2 - t1, "segundos"
-        
-        ! Conta quantos primos foram encontrados
         print *, "Primos encontrados:", count(eh_primo)
 
-        ! Aqui chamaremos o módulo de exportação depois
+        ! --- BLOCO DE SALVAMENTO INTELIGENTE ---
+        block
+            integer(kind=8) :: u, i_64, contador_final
+            open(newunit=u, file='data/resumo_primos.txt', status='replace')
+            
+            write(u, '(A, I0)') "Limite processado: ", limite
+            write(u, '(A, I0)') "Total de primos encontrados: ", count(eh_primo)
+            write(u, '(A, F10.4, A)') "Tempo de execucao: ", (t2 - t1), " segundos"
+            write(u, '(A)') "-----------------------------------------"
+
+            if (limite <= 10000000) then
+                write(u, '(A)') "Lista completa de primos encontrados:"
+                do i_64 = 1, limite
+                    if (eh_primo(i_64)) write(u, '(I0)') i_64
+                end do
+            else
+                write(u, '(A)') "Limite alto: salvando apenas os 100 maiores para prova de conceito:"
+                contador_final = 0
+                do i_64 = limite, 1, -1
+                    if (eh_primo(i_64)) then
+                        write(u, '(I0)') i_64
+                        contador_final = contador_final + 1
+                    end if
+                    if (contador_final >= 100) exit
+                end do
+            end if
+            close(u)
+        end block
+        print *, "Relatorio gerado em: data/resumo_primos.txt"
+        ! ---------------------------------------
+
         deallocate(eh_primo)
         
     end subroutine executar_atkin
