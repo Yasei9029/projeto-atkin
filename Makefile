@@ -1,29 +1,27 @@
-# Compilador
 FC = gfortran
-# Flags de otimização e OpenMP
 FFLAGS = -O3 -fopenmp -Jobj
-
-# Pastas
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
 
-# Arquivos fonte
-SRCS = $(wildcard $(SRC_DIR)/*.f90)
-OBJS = $(patsubst $(SRC_DIR)/%.f90, $(OBJ_DIR)/%.o, $(SRCS))
+# Lista os objetos na ordem correta: primeiro os módulos, depois o main
+OBJS = $(OBJ_DIR)/mod_crivo.o $(OBJ_DIR)/main.o
 
-# Nome do executável
 TARGET = $(BIN_DIR)/crivo_atkin
 
-# Regra principal
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(FC) $(FFLAGS) -o $@ $^
 
+# Regra geral para transformar .f90 em .o
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90
 	$(FC) $(FFLAGS) -c $< -o $@
 
-# Limpar arquivos de compilação
+# EXPLÍCITO: O main.o depende do mod_crivo.o estar pronto
+$(OBJ_DIR)/main.o: $(SRC_DIR)/main.f90 $(OBJ_DIR)/mod_crivo.o
+
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(OBJ_DIR)/*.mod $(TARGET)
+	if exist obj\*.o del /q obj\*.o
+	if exist obj\*.mod del /q obj\*.mod
+	if exist bin\*.exe del /q bin\*.exe
