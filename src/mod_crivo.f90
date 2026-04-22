@@ -13,7 +13,7 @@ contains
         character(len=10) :: hora_atual
         character(len=100) :: nome_arquivo
 
-        print *, "--- Iniciando Crivo de Atkin (Thread-Safe) ---"
+        print *, "--- Iniciando Crivo de Atkin ---"
         print *, "Limite:", limite
         
         allocate(eh_primo(limite))
@@ -67,7 +67,6 @@ contains
 
         call cpu_time(t2)
         
-        print *, "Calculo concluido!"
         print *, "Tempo total de CPU:", t2 - t1, "segundos"
         print *, "Primos encontrados:", count(eh_primo, kind=8)
 

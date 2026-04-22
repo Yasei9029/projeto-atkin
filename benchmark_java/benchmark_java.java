@@ -5,16 +5,18 @@ import java.util.stream.IntStream;
 public class benchmark_java {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.print(">>> Calculadora de Primos Java (Atkin Paralelo) <<<\nDigite o valor limite: ");
+        System.out.println(">>> CALCULADORA DE PRIMOS (ATKIN) <<<");
+        System.out.println("Digite o valor limite:");
         long limite = sc.nextLong();
+
+        System.out.println("--- Iniciando Crivo de Atkin ---");
+        System.out.println("Limite: " + limite);
 
         long t1 = System.nanoTime();
 
         BitSet ehPrimo = new BitSet((int) limite + 1);
         int raiz = (int) Math.sqrt(limite);
 
-        // 1. Equações quadráticas (Paralelizado com Streams)
-        // Isso equivale ao seu !$OMP PARALLEL DO do Fortran
         IntStream.rangeClosed(1, raiz).parallel().forEach(x -> {
             long x2 = (long) x * x;
             for (long y = 1; y <= raiz; y++) {
@@ -37,7 +39,6 @@ public class benchmark_java {
             }
         });
 
-        // 2. Eliminar múltiplos de quadrados (Sequencial, igual ao Fortran)
         for (int s = 5; s <= raiz; s++) {
             if (ehPrimo.get(s)) {
                 long s2 = (long) s * s;
@@ -53,8 +54,11 @@ public class benchmark_java {
         long t2 = System.nanoTime();
         double tempoSegundos = (t2 - t1) / 1_000_000_000.0;
 
-        System.out.printf("Cálculo concluído em %.4f segundos%n", tempoSegundos);
+        System.out.printf("Tempo total de CPU: %.4f segundos%n", tempoSegundos);
         System.out.println("Primos encontrados: " + ehPrimo.cardinality());
+        
+        System.out.println("\nPressione ENTER para sair...");
+        try { System.in.read(); } catch (Exception e) {}
         
         sc.close();
     }

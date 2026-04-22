@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
-void atkin(int limit, int* count) {
+void atkin(long long limit, long long* count) {
     if (limit < 2) {
         *count = 0;
         return;
     }
-
 
     unsigned char* sieve = (unsigned char*)calloc(limit + 1, sizeof(unsigned char));
     if (!sieve) {
@@ -15,11 +15,10 @@ void atkin(int limit, int* count) {
         exit(1);
     }
 
-    int x, y, n;
+    long long x, y, n;
 
     for (x = 1; x * x <= limit; x++) {
         for (y = 1; y * y <= limit; y++) {
-
             n = 4 * x * x + y * y;
             if (n <= limit && (n % 12 == 1 || n % 12 == 5))
                 sieve[n] ^= 1;
@@ -36,14 +35,13 @@ void atkin(int limit, int* count) {
 
     for (n = 5; n * n <= limit; n++) {
         if (sieve[n]) {
-            for (int k = n * n; k <= limit; k += n * n)
+            long long step = n * n;
+            for (long long k = step; k <= limit; k += step)
                 sieve[k] = 0;
         }
     }
 
-    // contar primos (sem armazenar todos)
-    int total = 0;
-
+    long long total = 0;
     if (limit >= 2) total++;
     if (limit >= 3) total++;
 
@@ -53,27 +51,32 @@ void atkin(int limit, int* count) {
     }
 
     *count = total;
-
     free(sieve);
 }
 
 int main() {
-    int n;
-    int count = 0;
+    long long n;
+    long long count = 0;
 
-    printf("Selecione o limite: ");
-    scanf("%d", &n);
+    printf(">>> CALCULADORA DE PRIMOS (ATKIN) <<<\n");
+    printf("Digite o valor limite:\n");
+    if (scanf("%lld", &n) != 1) return 1;
+
+    printf("--- Iniciando Crivo de Atkin ---\n");
+    printf("Limite: %lld\n", n);
 
     clock_t start = clock();
-
     atkin(n, &count);
-
     clock_t end = clock();
 
     double tempo = (double)(end - start) / CLOCKS_PER_SEC;
 
-    printf("Quantidade de primos ate %d: %d\n", n, count);
-    printf("Tempo: %f segundos\n", tempo);
+    printf("Tempo total de CPU: %f segundos\n", tempo);
+    printf("Primos encontrados: %lld\n", count);
+
+    printf("\nPressione ENTER para sair...\n");
+    getchar(); 
+    getchar(); 
 
     return 0;
 }
