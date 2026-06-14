@@ -16,8 +16,8 @@ cd projeto-atkin
 ## 2. Crie a estrutura de pastas necessária
 mkdir bin, obj, data
 
-## 3. Compile o código usando o Makefile
-mingw32-make
+## 3. Compile o código
+gfortran -O3 -fopenmp mod_crivo.f90 main.f90 -o crivo_atkin
 
 ## 4. Execute o programa
 .\bin\crivo_atkin.exe
