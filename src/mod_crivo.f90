@@ -111,7 +111,7 @@ contains
             if (limite_sup_glob >= 5) total_primos = total_primos + 1
         end if
 
-        print *, "Quantidade total de blocks:", qtd_blocos
+        print *, "Quantidade total de blocos:", qtd_blocos
         print *, "Processando blocos de forma paralela..."
 
         !$OMP PARALLEL DO REDUCTION(+:total_primos) &
@@ -135,7 +135,7 @@ contains
         tempo_real = real(t_end - t_start, 8) / real(t_rate, 8)
         
         print *, "-----------------------------------------"
-        print *, "Tempo REAL de execucao (Relogio):", tempo_real, "segundos"
+        print *, "Tempo de execucao:", tempo_real, "segundos"
         print *, "Primos encontrados neste intervalo:", total_primos
 
         open(newunit=u_chk, file="crivo.chk", status="old", iostat=status_io)
